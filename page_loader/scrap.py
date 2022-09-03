@@ -9,7 +9,7 @@ from tqdm import tqdm
 from page_loader.utils import filter_name, join_urls
 
 logger = logging.getLogger(__name__)
-logger.setLevel("INFO")
+logger.setLevel("DEBUG")
 
 
 def replace_links(
@@ -43,28 +43,27 @@ def replace_links(
     for tag in soup.find_all(["link", "script", "img"]):
         link, attr = get_link(tag)
         if link:
-
-            file_ext = get_file_ext(link)
-            link_netloc = link.replace(file_ext, "")
-            url_netloc = urlparse(base_url).netloc
-
-            if url_netloc == urlparse(link).netloc:
-                new_link = filter_name(link_netloc) + file_ext
-                links.append((link_netloc + file_ext, new_link))
-
+            file_ext = get_file_ext(link)  # .css
+            link_path = link.replace(file_ext, "")  # /assets/application
+            url_netloc = urlparse(base_url).netloc  # cdn2.hexlet.io
+            if url_netloc == urlparse(link).netloc:  # ru.hexlet.io
+                new_link = filter_name(link_path) + file_ext
+                links.append((link_path + file_ext, new_link))
             elif not link.startswith("http"):
-
-                new_link = filter_name(join_urls(url_netloc, link_netloc)) + file_ext
-
                 link_to_save = join_urls(
                     urlparse(base_url).scheme + "://" + url_netloc,
-                    link_netloc + file_ext,
-                ).replace(".html", "")
-                links.append((link_to_save, new_link))
+                    link_path + file_ext,
+                )
+                if link_path.startswith("/"):
+                    new_link = filter_name(join_urls(url_netloc, link_path)) + file_ext
+                else:
+                    new_link = filter_name(join_urls(base_url, link_path)) + file_ext
+
+                links.append((link_to_save.replace(".html", ""), new_link))
 
             else:
                 continue  # we dont need to change or save other types of links
-            save_dir = filter_name(base_url) + "_files"
+            save_dir = filter_name(base_url) + "_files"  # ru-hexlet-io-courses_files
             tag[attr] = join_urls(save_dir, new_link)
 
     return soup, links
