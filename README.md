@@ -33,3 +33,13 @@ page-loader --output /var/tmp https://ru.hexlet.io/courses
 
 ## About page-loader
 This is a cli utility that allows you to download web pages with all the contents.
+
+## Technologies
+### Python
+Requests, bs4 (Beautiful Soup), requests-mock, pytest, pytest-cov
+### CI/CD
+GitHub Actions
+### Testing
+Test driven development, mock testing
+### CodeStyle
+Flake8, Black, codeclimate
